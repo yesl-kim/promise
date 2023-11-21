@@ -5,12 +5,14 @@ const STATUS = {
 }
 
 addToTaskQueue = (task) => setTimeout(task, 0)
+isEmpty = (arr) => Array.isArray(arr) && arr.length === 0
 
 class MyPromise {
   constructor(executor) {
     this.status = STATUS.PENDING
     this.value = null
     this.error = null
+    this.fulfilledTasks = []
 
     executor(MyPromise.resolve.bind(this), MyPromise.reject.bind(this))
   }
@@ -21,10 +23,9 @@ class MyPromise {
     }
     this.value = value
     this.status = STATUS.FULFILLED
-    if (this.fulfilledFunc) {
-      // this.fulfilledFunc() // 바로 호출하지 않고 큐에 담음 순서를 지키려고??
-      addToTaskQueue(this.fulfilledFunc)
-    }
+    this.fulfilledTasks.forEach((task) => {
+      addToTaskQueue(task)
+    })
   }
 
   static reject(error) {
@@ -40,10 +41,13 @@ class MyPromise {
 
   then(onFulfilled, onRejected) {
     console.log('in then, ', this.status)
-    const fulfilledTask = () => onFulfilled(this.value)
+    const fulfilledTask = () => {
+      this.value = onFulfilled(this.value)
+    }
+
     switch (this.status) {
       case STATUS.PENDING: {
-        this.fulfilledFunc = fulfilledTask
+        this.fulfilledTasks.push(fulfilledTask)
         return this
       }
       case STATUS.FULFILLED: {
