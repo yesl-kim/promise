@@ -1,6 +1,7 @@
 ## Reference
 
-- [ ] https://www.promisejs.org/implementing/
+- [프로미스 스펙 및 요구사항](https://github.com/promises-aplus/promises-spec)
+- [프로미스 구현](https://www.promisejs.org/implementing/)
 
 ## trouble
 
